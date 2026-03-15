@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Blood Donor – Health Tech Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-overlay.open { display: flex; }
+
+    .popup-box {
+      background: linear-gradient(120deg, #e53935 0%, #ff1744 100%);
+      border-radius: 1.5rem;
+      padding: 2rem 1.8rem;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(229,57,53,0.3);
+      position: relative;
+      color: #fff;
+      animation: popIn 0.25s ease;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(0.93); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    .popup-box .input-group label { color:#ffe0e0; font-size:0.88rem; }
+    .popup-box .input-group input,
+    .popup-box .input-group select,
+    .popup-box .input-group textarea {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: #fff;
+      border-radius: 0.6rem;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.97rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .popup-box .input-group input::placeholder,
+    .popup-box .input-group textarea::placeholder { color:rgba(255,255,255,0.6); }
+    .popup-box .input-group select option { color:#222; background:#fff; }
+
+    .popup-close {
+      position: absolute;
+      top:1rem; right:1.2rem;
+      background: rgba(255,255,255,0.2);
+      border: none; color:#fff;
+      font-size:1.3rem; border-radius:50%;
+      width:34px; height:34px;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.2s;
+    }
+    .popup-close:hover { background:rgba(255,255,255,0.35); }
+
+    .donor-card {
+      background: #fff;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 24px rgba(30,34,90,0.08);
+      padding: 1.8rem 1.2rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .donor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 32px rgba(30,34,90,0.13);
+    }
+    .rank-badge {
+      position: absolute;
+      top: -10px; left: -10px;
+      background: linear-gradient(135deg,#1976d2,#64b5f6);
+      color: #fff;
+      font-size: 0.78rem; font-weight: 800;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items:center; justify-content:center;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.3);
+    }
+    .distance-badge {
+      background: #e3f2fd;
+      color: #1976d2;
+      font-size: 0.82rem; font-weight:700;
+      padding: 0.2rem 0.8rem;
+      border-radius: 2rem;
+    }
+  </style>
+</head>
+<body style="min-height:100vh; background:linear-gradient(120deg,#e3f2fd 0%,#fff 100%);">
+
+  <header class="header">
+    <div class="logo"><span class="icon">🩸</span> Health Tech Connect</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="find-blood.html" class="active">Find Blood</a>
+      <a href="request.html">Request</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="profile.html">Profile</a>
+      <a href="login.html" id="logoutBtn">Logout</a>
+    </nav>
+  </header>
+
+  <main style="max-width:1200px;margin:2.5rem auto 3rem auto;padding:0 1rem;">
+    <h2 style="font-size:2rem;font-weight:700;color:#1976d2;margin-bottom:0.3rem;">Find a Blood Donor</h2>
+    <p style="color:#888;margin-bottom:1.5rem;font-size:0.97rem;">
+      Donors are sorted by distance — nearest to you shown first.
+    </p>
+
+    <form class="find-blood-form" style="display:flex;flex-wrap:wrap;gap:1.5rem;margin-bottom:2.5rem;
+      background:rgba(255,255,255,0.95);border-radius:1.25rem;padding:2rem 1.5rem;
+      box-shadow:0 4px 24px rgba(30,34,90,0.08);">
+
+      <div class="input-group" style="flex:1 1 150px;min-width:150px;">
+        <label for="bloodGroup">Blood Group</label>
+        <select id="bloodGroup" required>
+          <option value="">Select</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>O+</option><option>O-</option>
+          <option>AB+</option><option>AB-</option>
+        </select>
+      </div>
+
+      <div class="input-group" style="flex:1 1 150px;min-width:150px;">
+        <label for="searchCity">City</label>
+        <input type="text" id="searchCity" required placeholder="e.g. Chennai">
+      </div>
+
+      <div class="input-group" style="flex:1 1 180px;min-width:180px;">
+        <label for="searchArea">Your Area <span style="color:#1976d2;font-size:0.88em;">(for distance)</span></label>
+        <input type="text" id="searchArea" required placeholder="e.g. Tambaram">
+      </div>
+
+      <button type="submit" class="btn" style="align-self:flex-end;height:48px;padding:0 2rem;">
+        🔍 Search
+      </button>
+    </form>
+
+    <section id="donorResults"
+      style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2rem;">
+      <p style="grid-column:1/-1;text-align:center;color:#888;">
+        Enter blood group, city and your area to find nearby donors.
+      </p>
+    </section>
+  </main>
+
+  <!-- Request Blood Popup -->
+  <div class="popup-overlay" id="requestPopup">
+    <div class="popup-box">
+      <button class="popup-close" onclick="closePopup()">✕</button>
+
+      <h3 style="font-size:1.4rem;font-weight:800;margin:0 0 0.3rem;">🩸 Request Blood</h3>
+      <p style="font-size:0.9rem;opacity:0.85;margin:0 0 1.4rem;">
+        Requesting from: <strong id="popupDonorName">—</strong>
+        &nbsp;|&nbsp; Blood: <strong id="popupDonorBlood" style="color:#ffe0e0;">—</strong>
+      </p>
+
+      <form id="requestForm" autocomplete="off">
+        <div class="input-group">
+          <label>Patient Name</label>
+          <input type="text" id="patientName" required placeholder="Full name">
+        </div>
+        <div class="input-group">
+          <label>Blood Group Required</label>
+          <select id="bloodRequired" required>
+            <option value="">Select</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>O+</option><option>O-</option>
+            <option>AB+</option><option>AB-</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Hospital Name</label>
+          <input type="text" id="hospital" required placeholder="Hospital name">
+        </div>
+        <div class="input-group">
+          <label>Location</label>
+          <input type="text" id="reqLocation" required placeholder="City, Area">
+        </div>
+        <div class="input-group">
+          <label>Urgency Level</label>
+          <select id="urgency">
+            <option value="Critical">Critical</option>
+            <option value="High" selected>High</option>
+            <option value="Medium">Medium</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Contact Number</label>
+          <input type="tel" id="contact" required placeholder="Phone number">
+        </div>
+        <div class="input-group">
+          <label>Additional Notes</label>
+          <textarea id="notes" rows="2" placeholder="Any extra info (optional)"></textarea>
+        </div>
+        <button type="submit" class="btn"
+          style="width:100%;font-size:1.05rem;margin-top:1.2rem;
+            background:#fff;color:#e53935;font-weight:800;border:none;">
+          🩸 Send Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ── EmailJS Init ──
+    emailjs.init('5N2dBAK-iPvgefsor');
+
+    const API_BASE = 'http://localhost:5000/api';
+    const token    = localStorage.getItem('token');
+
+    if (!token) { window.location.href = 'login.html'; }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.clear(); window.location.href = 'login.html';
+    });
+
+    // ── Haversine distance ──
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R    = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a    = Math.sin(dLat/2)**2 +
+                   Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+                   Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    // ── Geocode ──
+    async function geocode(area, city) {
+      try {
+        const q   = encodeURIComponent(`${area}, ${city}, India`);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (data.length) return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      } catch(e) {}
+      return null;
+    }
+
+    // ── Search Submit ──
+    document.querySelector('.find-blood-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const bloodGroup = document.getElementById('bloodGroup').value;
+      const city       = document.getElementById('searchCity').value.trim();
+      const myArea     = document.getElementById('searchArea').value.trim();
+      const resultsDiv = document.getElementById('donorResults');
+
+      resultsDiv.innerHTML = `
+        <p style="grid-column:1/-1;text-align:center;color:#1976d2;font-weight:600;">
+          🔍 Finding donors and calculating distances...</p>`;
+
+      try {
+        const res    = await fetch(
+          `${API_BASE}/donors/search?bloodGroup=${encodeURIComponent(bloodGroup)}&city=${encodeURIComponent(city)}`,
+          { headers: { 'Authorization': token } }
+        );
+        const donors = await res.json();
+        if (!res.ok) { alert(donors.msg || 'Error fetching donors.'); return; }
+
+        if (!donors.length) {
+          resultsDiv.innerHTML = `
+            <h3 style="grid-column:1/-1;text-align:center;color:#e53935;">
+              No available ${bloodGroup} donors found in ${city}.</h3>`;
+          return;
+        }
+
+        resultsDiv.innerHTML = `
+          <p style="grid-column:1/-1;text-align:center;color:#1976d2;">
+            📍 Calculating distances from <strong>${myArea}, ${city}</strong>...</p>`;
+
+        const myCoords = await geocode(myArea, city);
+
+        const enriched = await Promise.all(donors.map(async (donor) => {
+          const donorArea   = donor.area || (donor.location || '').split(',')[1]?.trim() || '';
+          const donorCoords = donorArea ? await geocode(donorArea, city) : null;
+          const distance    = (myCoords && donorCoords)
+            ? haversine(myCoords.lat, myCoords.lon, donorCoords.lat, donorCoords.lon)
+            : null;
+          return { ...donor, donorArea, distance };
+        }));
+
+        enriched.sort((a, b) => {
+          if (a.distance === null && b.distance === null) return 0;
+          if (a.distance === null) return 1;
+          if (b.distance === null) return -1;
+          return a.distance - b.distance;
+        });
+
+        renderDonors(enriched, myArea, city);
+
+      } catch (err) {
+        resultsDiv.innerHTML = `
+          <p style="grid-column:1/-1;text-align:center;color:red;">
+            ❌ Cannot connect to server. Make sure backend is running.</p>`;
+      }
+    });
+
+    // ── Render Donor Cards ──
+    function renderDonors(donors, myArea, city) {
+      const resultsDiv = document.getElementById('donorResults');
+      resultsDiv.innerHTML = '';
+
+      const badgeColors = [
+        'linear-gradient(135deg,#e53935,#ff5252)',
+        'linear-gradient(135deg,#1976d2,#64b5f6)',
+        'linear-gradient(135deg,#43a047,#81c784)'
+      ];
+
+      donors.forEach((donor, i) => {
+        const distText  = donor.distance !== null
+          ? `📍 ${donor.distance.toFixed(1)} km away`
+          : '📍 Distance not available';
+        const badgeBg   = badgeColors[i] || 'linear-gradient(135deg,#90a4ae,#b0bec5)';
+        const safeName  = donor.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        const safeEmail = (donor.email || '').replace(/'/g,"\\'");
+
+        const card = document.createElement('div');
+        card.className = 'donor-card';
+        card.innerHTML = `
+          <div class="rank-badge" style="background:${badgeBg};">${i + 1}</div>
+          <div style="width:64px;height:64px;border-radius:50%;background:#e3f2fd;
+            display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin-top:0.5rem;">👤</div>
+          <div style="font-weight:700;font-size:1.1rem;text-align:center;">${donor.name}</div>
+          <div style="font-size:1.15rem;color:#e53935;font-weight:800;">${donor.bloodGroup}</div>
+          <div style="color:#555;font-size:0.9rem;text-align:center;">
+            📌 ${donor.donorArea ? donor.donorArea + ', ' : ''}${donor.city}
+          </div>
+          <span class="distance-badge">${distText}</span>
+          <div style="color:#43a047;font-weight:600;font-size:0.93rem;">✅ Available</div>
+          <button class="btn btn-emergency"
+            style="width:100%;margin-top:0.4rem;font-size:0.92rem;padding:0.65rem 1rem;"
+            onclick="openPopup('${donor._id}','${safeName}','${donor.bloodGroup}','${safeEmail}')">
+            🩸 Request Blood
+          </button>
+        `;
+        resultsDiv.appendChild(card);
+      });
+    }
+
+    // ── Popup state ──
+    let currentDonorId    = null;
+    let currentDonorEmail = null;
+    let currentDonorName  = null;
+
+    function openPopup(donorId, donorName, donorBlood, donorEmail) {
+      currentDonorId    = donorId;
+      currentDonorEmail = donorEmail;
+      currentDonorName  = donorName;
+      document.getElementById('popupDonorName').textContent  = donorName;
+      document.getElementById('popupDonorBlood').textContent = donorBlood;
+      document.getElementById('bloodRequired').value         = donorBlood;
+      document.getElementById('requestPopup').classList.add('open');
+    }
+
+    function closePopup() {
+      document.getElementById('requestPopup').classList.remove('open');
+      document.getElementById('requestForm').reset();
+      currentDonorId = currentDonorEmail = currentDonorName = null;
+    }
+
+    document.getElementById('requestPopup').addEventListener('click', function(e) {
+      if (e.target === this) closePopup();
+    });
+
+    // ── Submit Request ──
+    document.getElementById('requestForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentDonorId) { alert('No donor selected.'); return; }
+
+      const patientName   = document.getElementById('patientName').value;
+      const bloodRequired = document.getElementById('bloodRequired').value;
+      const hospital      = document.getElementById('hospital').value;
+      const location      = document.getElementById('reqLocation').value;
+      const urgency       = document.getElementById('urgency').value;
+      const contact       = document.getElementById('contact').value;
+      const notes         = document.getElementById('notes').value;
+
+      // Step 1 — Save to backend database
+      try {
+        const res = await fetch(`${API_BASE}/emergency`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': token },
+          body:    JSON.stringify({
+            patientName,
+            bloodRequired,
+            hospital,
+            location,
+            urgency,
+            contact,
+            notes,
+            targetDonorId:    currentDonorId,
+            targetDonorEmail: currentDonorEmail
+          })
+        });
+        const result = await res.json();
+        if (!res.ok) { alert(result.msg); return; }
+      } catch (err) {
+        alert('❌ Cannot connect to server. Make sure backend is running.');
+        return;
+      }
+
+      // Step 2 — Send email via EmailJS (silent fail)
+      try {
+        await emailjs.send('service_d7fta4e', 'azf38l8', {
+          donor_name:   currentDonorName,
+          donor_email:  currentDonorEmail,
+          patient_name: patientName,
+          blood_group:  bloodRequired,
+          hospital:     hospital,
+          location:     location,
+          urgency:      urgency,
+          contact:      contact
+        });
+      } catch (emailErr) {
+        // Silent fail — request already saved, just log
+        console.error('Email error:', emailErr);
+      }
+
+      // Step 3 — Always close and show success
+      closePopup();
+      alert('🩸 Request sent! The donor has been notified.');
+    });
+  </script>
+</body>
+</html>

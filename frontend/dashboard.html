@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Health Tech Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="min-height:100vh; background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);">
+  <header class="header">
+    <div class="logo"><span class="icon">🩸</span> Health Tech Connect</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="find-blood.html">Find Blood</a>
+      <a href="request.html">Request</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="profile.html">Profile</a>
+      <a href="login.html" id="logoutBtn">Logout</a>
+    </nav>
+  </header>
+
+  <main style="max-width:1200px;margin:2.5rem auto 0 auto;padding:0 1rem;">
+    <div style="margin-bottom:2.5rem;">
+      <h2 style="font-size:2rem;font-weight:700;color:#1976d2;">
+        Welcome, <span id="userName">User</span> ❤️
+      </h2>
+      <div style="color:#444;font-size:1.15rem;margin-top:0.5rem;">Your life-saving dashboard</div>
+    </div>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2rem;">
+
+      <a href="find-blood.html" class="dashboard-card">
+        <div class="dashboard-icon" style="color:#1976d2;">🔍</div>
+        <div class="dashboard-title">Find Donors</div>
+        <div class="dashboard-desc" style="color:#555;margin-top:0.4rem;">Search for nearby blood donors in real time.</div>
+      </a>
+
+      <a href="request.html" class="dashboard-card">
+        <div class="dashboard-icon" style="color:#e53935;">🩸</div>
+        <div class="dashboard-title">Request</div>
+        <div class="dashboard-desc" style="color:#555;margin-top:0.4rem;">View incoming blood requests or post a new one.</div>
+      </a>
+
+      <a href="profile.html" class="dashboard-card">
+        <div class="dashboard-icon" style="color:#1976d2;">👤</div>
+        <div class="dashboard-title">My Profile</div>
+        <div class="dashboard-desc" style="color:#555;margin-top:0.4rem;">Manage your profile, donor status and history.</div>
+      </a>
+
+    </section>
+  </main>
+
+  <script>
+    // Auth guard
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = 'login.html'; }
+
+    // Show name
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.name) document.getElementById('userName').textContent = user.name;
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

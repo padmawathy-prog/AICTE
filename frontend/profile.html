@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile – Health Tech Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .history-item {
+      background: #f8f9fa;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 0.7rem;
+      font-size: 0.97rem;
+      color: #333;
+      border-left: 4px solid #e53935;
+    }
+    .history-item.donation { border-left-color: #1976d2; }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 28px;
+    }
+    .toggle-switch input { display: none; }
+    .slider {
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #ccc; border-radius: 28px;
+      transition: 0.3s;
+    }
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 20px; width: 20px;
+      left: 4px; bottom: 4px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .slider { background: #43a047; }
+    input:checked + .slider:before { transform: translateX(28px); }
+  </style>
+</head>
+<body style="min-height:100vh; background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);">
+
+  <header class="header">
+    <div class="logo"><span class="icon">🩸</span> Health Tech Connect</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="find-blood.html">Find Blood</a>
+      <a href="request.html">Request</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="profile.html" class="active">Profile</a>
+      <a href="login.html" id="logoutBtn">Logout</a>
+    </nav>
+  </header>
+
+  <main style="max-width:900px;margin:2.5rem auto 3rem auto;padding:0 1rem;display:flex;gap:2rem;align-items:flex-start;">
+
+    <!-- Left: Profile Card -->
+    <div style="flex:1;min-width:0;">
+    <!-- Profile Card -->
+    <div style="background:rgba(255,255,255,0.97);border-radius:1.5rem;
+      box-shadow:0 4px 24px rgba(30,34,90,0.08);padding:2.5rem 2rem;
+      display:flex;flex-direction:column;align-items:center;gap:1rem;">
+
+      <div style="width:90px;height:90px;border-radius:50%;background:#e3f2fd;
+        display:flex;align-items:center;justify-content:center;font-size:3rem;
+        box-shadow:0 2px 12px rgba(30,34,90,0.07);">👤</div>
+
+      <div style="font-size:1.4rem;font-weight:700;" id="profileName">—</div>
+      <div style="font-size:1.1rem;color:#e53935;font-weight:700;" id="profileBlood">—</div>
+      <div style="color:#1976d2;font-size:1rem;" id="profileLocation">—</div>
+      <div style="color:#888;font-size:0.9rem;" id="profileEmail">—</div>
+
+      <!-- Availability Toggle -->
+      <div style="display:flex;align-items:center;gap:1rem;margin:0.5rem 0;
+        background:#f0f4ff;border-radius:1rem;padding:0.9rem 1.5rem;">
+        <span style="font-weight:600;color:#333;">Available as Donor</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="availableToggle" onchange="updateAvailability()">
+          <span class="slider"></span>
+        </label>
+        <span id="availableLabel" style="font-weight:600;color:#888;font-size:0.95rem;">Off</span>
+      </div>
+
+      <!-- Donation History -->
+      <div style="width:100%;margin-top:1.2rem;">
+        <h3 style="font-size:1.1rem;color:#1976d2;margin-bottom:0.75rem;">
+          🩸 Donation History
+        </h3>
+        <div id="donationHistory">
+          <p style="color:#aaa;font-size:0.95rem;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Request History -->
+      <div style="width:100%;margin-top:1.2rem;">
+        <h3 style="font-size:1.1rem;color:#e53935;margin-bottom:0.75rem;">
+          📋 Posted Request History
+        </h3>
+        <div id="requestHistory">
+          <p style="color:#aaa;font-size:0.95rem;">Loading...</p>
+        </div>
+      </div>
+
+    </div><!-- end profile card -->
+    </div><!-- end left column -->
+
+    <!-- Right: Sticky Note -->
+    <div style="flex:0 0 220px;display:flex;align-items:center;min-height:400px;">
+      <div style="
+        background: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 32px rgba(229,57,53,0.13), 0 2px 8px rgba(25,118,210,0.08);
+        padding: 1.8rem 1.3rem;
+        position: relative;
+        font-family: 'Segoe UI', sans-serif;
+        border-top: 5px solid #e53935;
+        border-bottom: 5px solid #1976d2;
+        width: 100%;
+      ">
+        <!-- Pin -->
+        <div style="
+          position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+          width:22px;height:22px;background:radial-gradient(circle,#e53935,#b71c1c);
+          border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.25);
+          border:2px solid #fff;
+        "></div>
+
+        <!-- Icon -->
+        <div style="font-size:2rem;text-align:center;margin-bottom:0.7rem;">🩸</div>
+
+        <!-- Title -->
+        <div style="
+          font-size:0.92rem;font-weight:800;color:#e53935;
+          text-align:center;margin-bottom:0.8rem;letter-spacing:0.3px;
+          text-transform:uppercase;
+        ">Health Reminder</div>
+
+        <!-- Content -->
+        <p style="
+          font-size:0.93rem;color:#222;line-height:1.65;
+          text-align:center;margin:0;font-weight:500;
+        ">
+          It is completely <strong>safe to donate blood</strong> with a gap of
+          <strong style="color:#e53935;">2 months</strong>
+          from your previous donation. 💪
+        </p>
+
+        <div style="border-top:1.5px dashed #e3f2fd;margin:1rem 0 0.7rem;"></div>
+
+        <p style="font-size:0.82rem;color:#888;text-align:center;margin:0;line-height:1.5;">
+          Your body fully replenishes blood within 4–8 weeks. Stay healthy, keep donating! ❤️
+        </p>
+      </div>
+    </div><!-- end sticky note -->
+
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+    const token    = localStorage.getItem('token');
+    const myUser   = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // Auth guard
+    if (!token) { window.location.href = 'login.html'; }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.clear(); window.location.href = 'login.html';
+    });
+
+    // ── Populate profile info from localStorage ──
+    if (myUser.name)       document.getElementById('profileName').textContent     = myUser.name;
+    if (myUser.bloodGroup) document.getElementById('profileBlood').textContent    = myUser.bloodGroup;
+    if (myUser.location)   document.getElementById('profileLocation').textContent = myUser.location;
+    if (myUser.email)      document.getElementById('profileEmail').textContent    = myUser.email;
+
+    // ── Load availability from backend ──
+    async function loadProfile() {
+      try {
+        // We'll derive availability by calling /donors/search and checking our own record
+        // Or simply call a new /api/auth/me endpoint — let's use the search trick with a flag
+        // For simplicity, store isAvailable in localStorage on login/toggle
+        const stored = localStorage.getItem('isAvailable');
+        const isAvailable = stored === null ? true : stored === 'true';
+        setToggle(isAvailable);
+      } catch (e) {}
+    }
+
+    function setToggle(val) {
+      document.getElementById('availableToggle').checked = val;
+      document.getElementById('availableLabel').textContent = val ? 'On' : 'Off';
+      document.getElementById('availableLabel').style.color  = val ? '#43a047' : '#e53935';
+    }
+
+    async function updateAvailability() {
+      const isAvailable = document.getElementById('availableToggle').checked;
+      setToggle(isAvailable);
+      try {
+        const res = await fetch(`${API_BASE}/donors/availability`, {
+          method:  'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': token },
+          body:    JSON.stringify({ isAvailable })
+        });
+        const result = await res.json();
+        if (!res.ok) { alert(result.msg); return; }
+        localStorage.setItem('isAvailable', isAvailable);
+      } catch (err) {
+        alert('❌ Server error updating availability.');
+      }
+    }
+
+    // ── Load donation history ──
+    async function loadDonations() {
+      const div = document.getElementById('donationHistory');
+      try {
+        const res       = await fetch(`${API_BASE}/emergency/my-donations`, {
+          headers: { 'Authorization': token }
+        });
+        const donations = await res.json();
+        if (!res.ok) { div.innerHTML = `<p style="color:red;">${donations.msg}</p>`; return; }
+        if (!donations.length) {
+          div.innerHTML = `<p style="color:#aaa;font-size:0.95rem;">No donations yet.</p>`;
+          return;
+        }
+        div.innerHTML = donations.map(d => `
+          <div class="history-item donation">
+            <strong>${d.bloodRequired}</strong> · ${d.patientName} · ${d.hospital}
+            <div style="color:#888;font-size:0.87rem;margin-top:0.2rem;">
+              ${new Date(d.updatedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}
+              · ${d.location}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        div.innerHTML = `<p style="color:red;">❌ Cannot load donations.</p>`;
+      }
+    }
+
+    // ── Load request history ──
+    async function loadRequests() {
+      const div = document.getElementById('requestHistory');
+      try {
+        const res      = await fetch(`${API_BASE}/emergency/my-requests`, {
+          headers: { 'Authorization': token }
+        });
+        const requests = await res.json();
+        if (!res.ok) { div.innerHTML = `<p style="color:red;">${requests.msg}</p>`; return; }
+        if (!requests.length) {
+          div.innerHTML = `<p style="color:#aaa;font-size:0.95rem;">No requests posted yet.</p>`;
+          return;
+        }
+        const statusColors = { pending:'#ffa726', accepted:'#43a047', donated:'#1976d2', rejected:'#bbb' };
+        div.innerHTML = requests.map(r => `
+          <div class="history-item">
+            <strong>${r.bloodRequired}</strong> · ${r.patientName} · ${r.hospital}
+            <span style="margin-left:0.7rem;background:${statusColors[r.status]||'#aaa'};
+              color:#fff;padding:0.1rem 0.7rem;border-radius:2rem;font-size:0.82rem;font-weight:700;">
+              ${r.status.toUpperCase()}
+            </span>
+            <div style="color:#888;font-size:0.87rem;margin-top:0.2rem;">
+              ${new Date(r.createdAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})}
+              · ${r.location}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        div.innerHTML = `<p style="color:red;">❌ Cannot load requests.</p>`;
+      }
+    }
+
+    loadProfile();
+    loadDonations();
+    loadRequests();
+  </script>
+</body>
+</html>

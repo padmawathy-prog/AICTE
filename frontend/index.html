@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Tech Connect – Donate Blood, Save Lives</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo"><span class="icon">🩸</span> Health Tech Connect</div>
+    <nav class="nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="find-blood.html" onclick="requireLogin(event,'find-blood.html')">Find Blood</a>
+      <a href="request.html"    onclick="requireLogin(event,'request.html')">Request</a>
+      <a href="login.html">Login</a>
+      <a href="regis.html">Signup</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="heartbeat-bg">
+      <svg width="100%" height="120" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="0,60 100,60 120,30 140,90 160,60 200,60 220,20 240,100 260,60 1440,60" stroke="#e53935" stroke-width="4" fill="none">
+          <animate attributeName="points" dur="2s" repeatCount="indefinite"
+            values="0,60 100,60 120,30 140,90 160,60 200,60 220,20 240,100 260,60 1440,60;
+                    0,60 100,60 120,90 140,30 160,60 200,60 220,100 240,20 260,60 1440,60;
+                    0,60 100,60 120,30 140,90 160,60 200,60 220,20 240,100 260,60 1440,60" />
+        </polyline>
+      </svg>
+    </div>
+    <h1 class="hero-headline">Donate Blood, Save Lives — Connect Instantly in Emergencies</h1>
+    <div class="hero-subtext">Find nearby blood donors in seconds and send blood requests when every minute matters.</div>
+    <div class="hero-buttons">
+      <a href="find-blood.html" class="btn" onclick="requireLogin(event,'find-blood.html')">🔍 Find Blood</a>
+      <a href="request.html"    class="btn btn-emergency" onclick="requireLogin(event,'request.html')">🩸 Request Blood</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Instant Blood Requests</div>
+      <div class="feature-desc">Send urgent blood requests to nearby donors in real time.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📍</div>
+      <div class="feature-title">Real-time Nearby Donor Search</div>
+      <div class="feature-desc">Find available blood donors close to your location instantly.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <div class="feature-title">Secure Login & Data Protection</div>
+      <div class="feature-desc">Your data is protected with hospital-grade security.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🩸</div>
+      <div class="feature-title">Accept & Donate</div>
+      <div class="feature-desc">Donors receive requests and can accept, then mark as donated.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏥</div>
+      <div class="feature-title">Hospital Friendly Platform</div>
+      <div class="feature-desc">Designed for both patients and hospitals to use easily.</div>
+    </div>
+  </section>
+
+  <script>
+    // If already logged in, nav should show dashboard links
+    const token = localStorage.getItem('token');
+    if (token) {
+      document.querySelector('.nav').innerHTML = `
+        <a href="index.html" class="active">Home</a>
+        <a href="find-blood.html">Find Blood</a>
+        <a href="request.html">Request</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="profile.html">Profile</a>
+        <a href="login.html" onclick="localStorage.clear()">Logout</a>
+      `;
+    }
+
+    function requireLogin(e, page) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        e.preventDefault();
+        if (confirm('You need to login first. Go to login page?')) {
+          window.location.href = 'login.html';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

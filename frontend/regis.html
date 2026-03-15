@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup – Health Tech Connect</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="min-height:100vh; background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);">
+
+  <header class="header">
+    <div class="logo"><span class="icon">🩸</span> Health Tech Connect</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="find-blood.html">Find Blood</a>
+      <a href="request.html">Request</a>
+      <a href="login.html">Login</a>
+      <a href="regis.html" class="active">Signup</a>
+    </nav>
+  </header>
+
+  <main style="display:flex;align-items:center;justify-content:center;min-height:80vh;">
+    <div class="signup-card glass-card">
+      <h2 style="text-align:center;color:#e53935;font-weight:700;margin-bottom:1.3rem;">
+        Create Your Account
+      </h2>
+      <form id="signupForm" autocomplete="off">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="name" required placeholder="Your Name">
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="email" required placeholder="you@email.com">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" required placeholder="Create strong password">
+        </div>
+        <div class="input-group">
+          <label>Blood Group</label>
+          <select id="bloodGroup" required>
+            <option value="">Select Blood Group</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>O+</option><option>O-</option>
+            <option>AB+</option><option>AB-</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Location <span style="color:#1976d2;font-size:0.95em;">(City, Area)</span></label>
+          <input type="text" id="location" required placeholder="e.g. Chennai, Tambaram">
+        </div>
+        <button type="submit" class="btn" style="width:100%;margin-top:1.3rem;">Sign Up</button>
+      </form>
+      <div style="text-align:center;margin-top:1.4rem;font-size:0.95rem;">
+        <span>Already registered? </span>
+        <a href="login.html" style="color:#1976d2;font-weight:600;">Login</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
